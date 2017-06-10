@@ -24,11 +24,21 @@ module.exports = (robot) => {
     });
   });
 
-  robot.hear(/TWITTER$/i, (res) => {
-    res.send('aaaaa');
-    // statuses/home_timeline
-    // favorites/list
-    // statuses/user_timeline(user_id: Int64)
+  robot.hear(/TIMELINE$/i, (res) => {
+    client.get('statuses/home_timeline', (error, tweets, response) => {
+      if (error) {
+        res.send('got twitter error');
+        throw error;
+      }
+      console.log(tweets);
+      tweets.forEach((tweet) => {
+        const output = tweet.user.name + '\n-------------\n' + tweet.text;
+        res.send(output);
+      });
+    });
+  });
+
+  robot.hear(/SEARCH$/i, (res) => {
     client.get('statuses/user_timeline', {user_id: process.env.SEARCH_TARGET_ID}, (error, tweets, response) => {
       if (error) {
         res.send('got twitter error');
@@ -42,7 +52,7 @@ module.exports = (robot) => {
         .forEach((tweet) => {
           const output = tweet.user.name + '\n-------------\n' + tweet.text;
           res.send(output);
-        })
+        });
     });
   });
 }
