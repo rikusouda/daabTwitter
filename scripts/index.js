@@ -16,14 +16,6 @@ module.exports = (robot) => {
     res.send('PONG pong');
   });
 
-  robot.hear('stamp', (res) => {
-    console.log(res.json);
-    res.send({
-      stamp_set: '3',
-      stamp_index: '1›152921507291204314'
-    });
-  });
-
   robot.hear(/TIMELINE$/i, (res) => {
     client.get('statuses/home_timeline', (error, tweets, response) => {
       if (error) {
