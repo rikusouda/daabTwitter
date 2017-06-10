@@ -20,27 +20,29 @@ module.exports = (robot) => {
     console.log(res.json);
     res.send({
       stamp_set: '3',
-      stamp_index: '1152921507291204314'
+      stamp_index: '1›152921507291204314'
     });
   });
 
   robot.hear(/TWITTER$/i, (res) => {
     res.send('aaaaa');
-    console.log(process.env.TWITTER_CONSUMER_KEY);
-    console.log(process.env.TWITTER_CONSUMER_SECRET);
-    console.log(process.env.TWITTER_ACCESS_TOKEN_KEY);
-    console.log(process.env.TWITTER_ACCESS_TOKEN_SECRET);
-    client.get('favorites/list', function(error, tweets, response) {
+    // statuses/home_timeline
+    // favorites/list
+    // statuses/user_timeline(user_id: Int64)
+    client.get('statuses/user_timeline', {user_id: process.env.SEARCH_TARGET_ID}, (error, tweets, response) => {
       if (error) {
-
         res.send('got twitter error');
         throw error;
       }
       console.log(tweets);
-      tweets.forEach((tweet) => {
-        res.send(tweet.user.name);
-        res.send(tweet.text);
-      })
+      tweets
+        .filter((tweet) => {
+           return tweet.text.match(new RegExp(process.env.MESSAGE_FILTER));
+         })
+        .forEach((tweet) => {
+          const output = tweet.user.name + '\n-------------\n' + tweet.text;
+          res.send(output);
+        })
     });
   });
 }
